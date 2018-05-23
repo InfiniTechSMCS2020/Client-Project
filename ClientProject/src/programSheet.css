@@ -1,0 +1,10 @@
+.root{
+    -fx-background-image: url("download.jpg");
+    -fx-background-size: 1920 1080;
+    -fx-background-position: center center;
+}
+
+.label{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
