@@ -3,10 +3,13 @@ import java.io.IOException;
 import java.io.File;
 public class CSVWriter{
     static int count=0;
-    public static void writeFile(String file, String message){
+    public static void writeFile(String file, String[] message){
         try{
             FileWriter fw = new FileWriter(file,true);
-            fw.append(message);
+            for(int i=0;i<message.length;i++) {
+                fw.append(message[i]);
+                fw.append(",");
+            }
             fw.append("\n");
             fw.close();
         }catch(IOException e){

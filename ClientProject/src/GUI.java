@@ -12,14 +12,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.BorderPane;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class GUI extends Application{       //TODO apply the date to csv file names, make autofill, edit GUI, use thread to do checking for autofill/Combobox
+    static int[] inputs = new int[2];
     static int numberOfRuns;
+    static boolean buttonClicked;
     Scene scene;
     Scene settingsScene;
 
     Button settings;
+
+    Button refresh;
 
     Button goBack;
     Button blue;
@@ -30,6 +35,8 @@ public class GUI extends Application{       //TODO apply the date to csv file na
     Button purple;
 
     Button submitID;
+
+    Button buttonPie;
 
     TextField idBox;
     ComboBox teachBox;
@@ -48,12 +55,17 @@ public class GUI extends Application{       //TODO apply the date to csv file na
     Label studGrade;
     Label reason;
 
+    Scene scene2;
+
+    PieChart pieChart;
+
     int ID;
 
     String[] listOfBackgrounds = {"colors/blue.css","colors/yellow.css","colors/green.css","colors/red.css","colors/orange.css","colors/purple.css",
     "programSheet.css"};
 
     public static void main(String[] args){
+        FileReaderTeacher.readFromFile("\\C:\\Users\\jacob\\Documents\\Teachers.txt");
         launch(args);
     }
 
@@ -68,7 +80,7 @@ public class GUI extends Application{       //TODO apply the date to csv file na
 
 
 
-        settings = new Button();               //Make new window + add case for someone trying to open it multiple times
+        settings = new Button();//Make new window + add case for someone trying to open it multiple times
         settings.setText("Settings");
         grid.add(settings,3,9);
 
@@ -76,11 +88,34 @@ public class GUI extends Application{       //TODO apply the date to csv file na
 
         idBox= new TextField();
         grid.add(idBox,1,1);
-
-        String[] teacher = {"Flowers", "Gerard", "Curran", "Lee", "Gerardles", "Gerardlist"};
-        teachBox= new ComboBox();
-        teachBox.getItems().add("Hi");
+        teachBox = new ComboBox();
+        refresh= new Button();
         grid.add(teachBox,4,1);
+        grid.add(refresh,5,1);
+
+        for(int i=0; i<FileReaderTeacher.teacherList.size();i++) {
+            teachBox.getItems().add(FileReaderTeacher.teacherList.get(i));
+        }
+       refresh.setOnAction( e -> {
+           for(int j=0; j<FileReaderTeacher.teacherList.size();j++){
+               if(!FileReaderTeacher.teacherList.get(j).contains((String)teachBox.getValue())){
+                   teachBox.getItems().remove(FileReaderTeacher.teacherList.get(j));
+               }
+               else if(!teachBox.getItems().contains(FileReaderTeacher.teacherList.get(j))  &&  FileReaderTeacher.teacherList.get(j).contains((String)teachBox.getValue())){
+                   teachBox.getItems().add(FileReaderTeacher.teacherList.get(j));
+
+               }
+               if(teachBox.getItems().isEmpty()){
+                   for(int i=0; i<FileReaderTeacher.teacherList.size();i++) {
+                       teachBox.getItems().add(FileReaderTeacher.teacherList.get(i));
+                   }
+                   teachBox.setValue("");
+               }
+           }
+        }
+       );
+      
+        /*
         boolean status = true;
         while(teachBox.onActionProperty().toString().substring(teachBox.onActionProperty().toString().indexOf("value") + 7).equals("null")) {
             for (int i = 0; i < teacher.length; i++) {
@@ -91,6 +126,7 @@ public class GUI extends Application{       //TODO apply the date to csv file na
                 }
             }
         }
+        */
         teachBox.setOnAction(e -> {
         System.out.println("hi");
         System.out.println(teachBox.onActionProperty().toString().substring(teachBox.onActionProperty().toString().indexOf("value") + 7));
@@ -106,7 +142,7 @@ public class GUI extends Application{       //TODO apply the date to csv file na
 
         String[] reasonList = {"Schedule",
                 "Academic Planning",
-                "Personal, Social, or Emotional",
+                "Personal/Social/Emotional",
                 "College and Career Information",
                 "Got a Pass from Counselor",
                 "Other"};
@@ -139,18 +175,22 @@ public class GUI extends Application{       //TODO apply the date to csv file na
         reason = new Label("Reason for visit");
         grid.add(reason, 4, 6);
 
-        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
-                new PieChart.Data("Option 1", 25),
-                new PieChart.Data("Option 2", 50),
-                new PieChart.Data("Option 3", 25)
-        );
-
-        PieChart pieChart = new PieChart(pieData);
-        BorderPane pane = new BorderPane();
-        Scene scene2 = new Scene(pane, 1000,1000);
-        pane.setCenter(pieChart);
-
-
+        //LISTS AND DATA OPERATIONS
+        settings.setOnAction( e -> {
+            pieChartData.create();
+            stage.setScene(pieChartData.scene2);
+        });
+        pieChartData.submitTime.setOnAction( e -> {
+            GUI.inputs[0]= Integer.valueOf(pieChartData.inputMonthBox.getText());
+            GUI.inputs[1]= Integer.valueOf(pieChartData.inputYearBox.getText());
+            pieChartData.execute();
+            System.out.println(pieChartData.pane.getChildren());
+            while(pieChartData.pane.getChildren().size()>3){
+                        pieChartData.pane.getChildren().remove(pieChartData.pane.getChildren().size() -1);
+                }
+            pieChartData.pane.add(pieChartData.pieChart,1,1);
+            pieChartData.pane.add(pieChartData.pieChartGrade,2,1);
+        });
 
         scene = new Scene(grid, 1920, 1080 );
         scene.getStylesheets().add("programSheet.css");
@@ -221,23 +261,26 @@ public class GUI extends Application{       //TODO apply the date to csv file na
             removeAllBut("colors/orange.css");
         });
 
-
+/*
         settings.setOnAction( e -> {
             stage.setScene(scene2);
         });
+        */
         Date date = new Date();
-        int month= date.getMonth() + 2;
+        int month= date.getMonth() + 1;
         int year = date.getYear() - 100;
-        submitID= new Button("Press to submit");
+        submitID= new Button();
         grid.add(submitID,3,10);
         String fileName = "C:\\Users\\jacob\\Documents\\" + String.valueOf(month) + "_" + String.valueOf(year) +".csv";
         System.out.println(fileName);
         submitID.setOnAction( e -> {
-            ID= Integer.valueOf(idBox.getText());
-            CSVWriter.writeFile(fileName , String.valueOf(ID));
-            System.out.println(date.getYear());
-            numberOfRuns++;
+            String[] returnList= {idBox.getText(),(String) teachBox.getValue(), nameBox.getText(), counsBox.getText(),  gradeBox.getText(), reasonBox.getValue()};
+            CSVWriter.writeFile(fileName , returnList);
+            Emailer.email("infinitechSMCS2020@gmail.com","Infinity1238","jacobkiviat@gmail.com",idBox.getText() + " has just signed in", "Counseling Office Sign-In");
+            numberOfRuns++;         //Add it so that the email sends to a teacher that is inputted
         });
+        submitID.setMinSize(141,53);
+        submitID.setMaxSize(141,53);
     }
     private void removeAllBut(String file) {
         for (int i = 0; i < listOfBackgrounds.length; i++) {
