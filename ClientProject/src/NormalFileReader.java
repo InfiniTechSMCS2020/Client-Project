@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class NormalFileReader {
         public static ArrayList<String> readFromFileNormal(String fileName){
             ArrayList<String> outputList = new ArrayList<String>();
-            int i =0;
+
             try{
                 FileReader fr = new FileReader(fileName);
                 BufferedReader br = new BufferedReader(fr);

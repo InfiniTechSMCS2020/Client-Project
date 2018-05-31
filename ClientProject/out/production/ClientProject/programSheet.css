@@ -3,14 +3,28 @@
     -fx-background-size: 1920 1080;
     -fx-background-position: center center;
 }
+.scene{
+    -fx-background-image: url("Untitled.png");
+    -fx-background-size: 1920 1080;
+    -fx-background-position: center center;
+}
 
 .label{
     -fx-text-fill: #000000;
     -fx-font-weight: bold;
 }
-.button{
+.label-big{
+    -fx-font-size: 28;
+
+}
+.button-signIn{
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-background-image: url("Capture.PNG");
     -fx-background-size: 141 53
 }
+.chart-legend{
+    -fx-background-color: #FCF69D;
+}
+
+

@@ -23,7 +23,7 @@ public class Emailer {
             messageEmail.setSubject(subject);
             messageEmail.setText(message);
             Transport.send(messageEmail);
-            System.out.println("message send");
+            System.out.println("message sent");
         }catch(MessagingException e){
             throw new RuntimeException(e);
         }

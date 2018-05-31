@@ -4,21 +4,28 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 
 public class pieChartData {
+    static Button button= new Button("Back to Admin Screen");
     static ObservableList<PieChart.Data> pieData;
     static ObservableList<PieChart.Data> pieDataGrade;
     static Scene scene2;
     static TextField inputMonthBox = new TextField();
     static TextField inputYearBox = new TextField();
-    static Button submitTime = new Button();
+    static Button submitTime = new Button("See Pie Charts");
     static GridPane pane;
     static PieChart pieChart;
     static PieChart pieChartGrade;
+    static Label gradeTitle = new Label();
+    static Label pieTitle= new Label();
+    static Label monthLabel = new Label("Month");
+    static Label yearLabel= new Label("Year");
     public static void execute() {
         CreateDataSet dataSet = new CreateDataSet();
         dataSet.fillLists("\\C:\\Users\\jacob\\Documents\\" + GUI.inputs[0] + "_" + GUI.inputs[1] + ".csv");
@@ -48,7 +55,7 @@ public class pieChartData {
             if (reasonListGUI.get(a).equals("Got a Pass from Counselor")) {
                 pass++;
             }
-            if (reasonListGUI.get(a).equals("Other")) {
+            else{
                 other++;
             }
         }
@@ -64,6 +71,10 @@ public class pieChartData {
 
         pieChart = new PieChart(pieChartData.pieData);
         pieChart.setMinSize(750, 750);
+        pieChart.getStylesheets().add("programSheet.css");
+        pieTitle.getStyleClass().add("label-big");
+        pieTitle.setText("Student Reasons for Visiting During " + GUI.inputs[0] +"/"+ GUI.inputs[1]);
+
 
         //grades
         int nine = 0;
@@ -97,13 +108,27 @@ public class pieChartData {
         System.out.println(pieDataGrade);
         pieChartGrade = new PieChart(pieDataGrade);
         pieChartGrade.setMinSize(500, 500);
+        pieChartGrade.getStylesheets().add("programSheet.css");
+        gradeTitle.getStyleClass().add("label-big");
+        gradeTitle.setText("Student Grade Levels During " + GUI.inputs[0] +"/"+ GUI.inputs[1]);
+
+
+
     }
     public static void create(){
         pane = new GridPane();
+        pane.setVgap(10);
+        pane.setHgap(10);
         scene2 = new Scene(pane, 1920, 1080);
+        scene2.getStylesheets().add("programSheet.css");
         pane.setAlignment(Pos.CENTER);
-        pane.add(inputMonthBox, 3, 3);
-        pane.add(inputYearBox, 3, 4);
-        pane.add(submitTime, 3, 5);
+        pane.add(inputMonthBox, 4, 2);
+        pane.add(inputYearBox, 4, 3);
+        pane.add(submitTime, 4, 4);
+        pane.add(pieTitle,1,2);
+        pane.add(gradeTitle,2,2);
+        pane.add(button,4,5);
+        pane.add(monthLabel,3,2);
+        pane.add(yearLabel,3,3);
     }
 }

@@ -32,7 +32,7 @@ public class CreateDataSet {
             s=s.substring(s.indexOf(",")+1);
             gradeList.add(Integer.valueOf(s.substring(0,s.indexOf(","))));
             s=s.substring(s.indexOf(",")+1);
-            reasonList.add(s.substring(0,s.indexOf(",")));
+            reasonList.add(s.substring(0,s.length()-1));
         }
 
     }

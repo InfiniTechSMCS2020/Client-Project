@@ -10,21 +10,19 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.chart.PieChart;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class GUI extends Application{       //TODO apply the date to csv file names, make autofill, edit GUI, use thread to do checking for autofill/Combobox
+public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE CLOSING , Graph titles, Change the inputs to be able to enter lower case, Make file upload for OTHER the actual input in text box, Are you sure that you want to do this popup, Blank out fields when submit is pressed, Update teachers on keystroke , make autofill, edit GUI, use thread to do checking for autofill/Combobox
     static int[] inputs = new int[2];
     static int numberOfRuns;
     static boolean buttonClicked;
-    Scene scene;
+    static Scene scene;
     Scene settingsScene;
 
-    Button settings;
-
-    Button refresh;
+    Button seePieCharts;
 
     Button goBack;
     Button blue;
@@ -41,7 +39,7 @@ public class GUI extends Application{       //TODO apply the date to csv file na
     TextField idBox;
     ComboBox teachBox;
     TextField nameBox;
-    TextField counsBox;
+    ComboBox counsBox;
     TextField gradeBox;
     TextField other;
 
@@ -55,6 +53,8 @@ public class GUI extends Application{       //TODO apply the date to csv file na
     Label studGrade;
     Label reason;
 
+    static Scene adminScene;
+
     Scene scene2;
 
     PieChart pieChart;
@@ -63,15 +63,16 @@ public class GUI extends Application{       //TODO apply the date to csv file na
 
     String[] listOfBackgrounds = {"colors/blue.css","colors/yellow.css","colors/green.css","colors/red.css","colors/orange.css","colors/purple.css",
     "programSheet.css"};
-
+    public static Stage stageClone = new Stage();
     public static void main(String[] args){
         FileReaderTeacher.readFromFile("\\C:\\Users\\jacob\\Documents\\Teachers.txt");
         launch(args);
     }
 
     public void start(Stage stage) throws Exception{
-        numberOfRuns=0;
+        stageClone = stage;
 
+        numberOfRuns=0;
 
         GridPane grid = new GridPane();
         grid.setVgap(10);
@@ -80,28 +81,30 @@ public class GUI extends Application{       //TODO apply the date to csv file na
 
 
 
-        settings = new Button();//Make new window + add case for someone trying to open it multiple times
-        settings.setText("Settings");
-        grid.add(settings,3,9);
+        seePieCharts = new Button();//Make new window + add case for someone trying to open it multiple times
+        seePieCharts.setText("See Pie Charts");
 
         //Text Boxes
 
         idBox= new TextField();
+        idBox.setMinSize(400,40);
         grid.add(idBox,1,1);
         teachBox = new ComboBox();
-        refresh= new Button();
+        teachBox.setMinSize(400,40);
         grid.add(teachBox,4,1);
-        grid.add(refresh,5,1);
 
         for(int i=0; i<FileReaderTeacher.teacherList.size();i++) {
             teachBox.getItems().add(FileReaderTeacher.teacherList.get(i));
         }
-       refresh.setOnAction( e -> {
+
+       teachBox.setOnKeyReleased( e -> {
+           System.out.println("Key Typed");
+           System.out.println(teachBox.getValue());
            for(int j=0; j<FileReaderTeacher.teacherList.size();j++){
-               if(!FileReaderTeacher.teacherList.get(j).contains((String)teachBox.getValue())){
+               if(!FileReaderTeacher.teacherList.get(j).contains(teachBox.getEditor().getText())){
                    teachBox.getItems().remove(FileReaderTeacher.teacherList.get(j));
                }
-               else if(!teachBox.getItems().contains(FileReaderTeacher.teacherList.get(j))  &&  FileReaderTeacher.teacherList.get(j).contains((String)teachBox.getValue())){
+               else if(!teachBox.getItems().contains(FileReaderTeacher.teacherList.get(j))  &&  FileReaderTeacher.teacherList.get(j).contains( teachBox.getEditor().getText())){
                    teachBox.getItems().add(FileReaderTeacher.teacherList.get(j));
 
                }
@@ -109,11 +112,12 @@ public class GUI extends Application{       //TODO apply the date to csv file na
                    for(int i=0; i<FileReaderTeacher.teacherList.size();i++) {
                        teachBox.getItems().add(FileReaderTeacher.teacherList.get(i));
                    }
-                   teachBox.setValue("");
+                   teachBox.getEditor().setText("");
                }
            }
         }
        );
+
       
         /*
         boolean status = true;
@@ -135,10 +139,27 @@ public class GUI extends Application{       //TODO apply the date to csv file na
         teachBox.setEditable(true);
         nameBox= new TextField();
         grid.add(nameBox,1,4);
-        counsBox= new TextField();
+        nameBox.setMinSize(400,40);
+
+
+        counsBox= new ComboBox();
         grid.add(counsBox,4,4);
+        counsBox.setMinSize(400,40);
+
+        String[] counsList = {"Ms. Nelly Boishin",
+                "Mr. David Gysberts",
+                "Mrs. Barbara Martin",
+                "Mrs. Melissa Nagy",
+                "Mr. Edward Reed",
+                };
+        for(int c = 0; c<counsList.length; c++) {
+            counsBox.getItems().add(counsList[c]);
+        }
+
         gradeBox= new TextField();
         grid.add(gradeBox,1,7);
+        gradeBox.setMinSize(400,40);
+
 
         String[] reasonList = {"Schedule",
                 "Academic Planning",
@@ -147,14 +168,18 @@ public class GUI extends Application{       //TODO apply the date to csv file na
                 "Got a Pass from Counselor",
                 "Other"};
         reasonBox= new ComboBox();
+        reasonBox.setMinSize(400,40);
         other = new TextField();
+        other.setVisible(false);
+        other.setMinSize(400,40);
+        grid.add(other, 4, 8);
         reasonBox.getItems().addAll(reasonList);
 
         reasonBox.setOnAction( event -> {
             if (reasonBox.getValue().equals("Other")) {
-                grid.add(other, 4, 8);
+                other.setVisible(true);
             } else {
-                grid.getChildren().remove(other);
+                other.setVisible(false);
             }
         }
         );
@@ -176,7 +201,7 @@ public class GUI extends Application{       //TODO apply the date to csv file na
         grid.add(reason, 4, 6);
 
         //LISTS AND DATA OPERATIONS
-        settings.setOnAction( e -> {
+        seePieCharts.setOnAction( e -> {
             pieChartData.create();
             stage.setScene(pieChartData.scene2);
         });
@@ -185,13 +210,15 @@ public class GUI extends Application{       //TODO apply the date to csv file na
             GUI.inputs[1]= Integer.valueOf(pieChartData.inputYearBox.getText());
             pieChartData.execute();
             System.out.println(pieChartData.pane.getChildren());
-            while(pieChartData.pane.getChildren().size()>3){
+            while(pieChartData.pane.getChildren().size()>8){
                         pieChartData.pane.getChildren().remove(pieChartData.pane.getChildren().size() -1);
                 }
             pieChartData.pane.add(pieChartData.pieChart,1,1);
             pieChartData.pane.add(pieChartData.pieChartGrade,2,1);
         });
 
+        Button admin = new Button("Admin Screen");
+        grid.add(admin,7,10);
         scene = new Scene(grid, 1920, 1080 );
         scene.getStylesheets().add("programSheet.css");
         stage.setScene(scene);
@@ -270,17 +297,55 @@ public class GUI extends Application{       //TODO apply the date to csv file na
         int month= date.getMonth() + 1;
         int year = date.getYear() - 100;
         submitID= new Button();
-        grid.add(submitID,3,10);
+        submitID.getStyleClass().add("button-signIn");
+        grid.add(submitID,3,9);
         String fileName = "C:\\Users\\jacob\\Documents\\" + String.valueOf(month) + "_" + String.valueOf(year) +".csv";
         System.out.println(fileName);
         submitID.setOnAction( e -> {
-            String[] returnList= {idBox.getText(),(String) teachBox.getValue(), nameBox.getText(), counsBox.getText(),  gradeBox.getText(), reasonBox.getValue()};
-            CSVWriter.writeFile(fileName , returnList);
+            String[] returnList= {idBox.getText(),(String) teachBox.getValue(), nameBox.getText(), (String)counsBox.getValue(),  gradeBox.getText(), reasonBox.getValue()};
+            if(returnList[5].equals("Other")){
+                returnList[5] = other.getText();
+            }
+            //System.out.println(FileReaderTeacher.emailList.get(FileReaderTeacher.teacherList.indexOf(returnList[1])));
+            CSVWriter.writeFile(fileName , returnList);  //email To could be changed to teacherList.
             Emailer.email("infinitechSMCS2020@gmail.com","Infinity1238","jacobkiviat@gmail.com",idBox.getText() + " has just signed in", "Counseling Office Sign-In");
-            numberOfRuns++;         //Add it so that the email sends to a teacher that is inputted
+            numberOfRuns++;
+            idBox.setText("");
+            teachBox.getEditor().setText("");
+            nameBox.setText("");
+            counsBox.setValue("");
+            gradeBox.setText("");
+            reasonBox.setValue("");
+            other.setText("");
+            other.setVisible(false);//Add it so that the email sends to a teacher that is inputted
         });
         submitID.setMinSize(141,53);
         submitID.setMaxSize(141,53);
+
+        Button back = new Button("Go to Sign-In Program");
+        Label mainMenuAdmin = new Label("Welcome to PHS Counseling Admin Screen");
+        mainMenuAdmin.getStylesheets().add("programSheet.css");
+        mainMenuAdmin.getStyleClass().add("label-big");
+        GridPane adminGrid = new GridPane();
+        adminGrid.setVgap(10);
+        adminGrid.setHgap(10);
+        adminGrid.setAlignment(Pos.CENTER);
+        adminGrid.add(mainMenuAdmin,0,0);
+        adminGrid.add(seePieCharts,0,1);
+        adminGrid.add(back,0,2);
+        back.setOnAction(e ->{
+            stage.setScene(scene);
+        });
+        adminScene = new Scene(adminGrid,1920,1080);
+        adminScene.getStylesheets().add("programSheet.css");
+        admin.setOnAction( e ->{
+            AdminLogIn.show();
+        });
+
+        pieChartData.button.setOnAction( e ->{
+            GUI.setPieSceneBack();
+        });
+
     }
     private void removeAllBut(String file) {
         for (int i = 0; i < listOfBackgrounds.length; i++) {
@@ -290,6 +355,14 @@ public class GUI extends Application{       //TODO apply the date to csv file na
             }
         }
     }
+    public static void setAdminScene(){
+        stageClone.setScene(adminScene);
+    }
+    public static void setPieSceneBack(){
+        stageClone.setScene(adminScene);
+    }
+
+
 
 
 }
