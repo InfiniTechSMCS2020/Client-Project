@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
     static int numberOfRuns;
     static boolean buttonClicked;
     static Scene scene;
+    static boolean isAutofill;
     Scene settingsScene;
 
     Button seePieCharts;
@@ -36,10 +38,10 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
 
     Button buttonPie;
 
-    TextField idBox;
+    ComboBox idBox;
     ComboBox teachBox;
     TextField nameBox;
-    ComboBox counsBox;
+    TextField counsBox;
     TextField gradeBox;
     TextField other;
 
@@ -85,10 +87,63 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
         seePieCharts.setText("See Pie Charts");
 
         //Text Boxes
-
-        idBox= new TextField();
+        CreateAutofillFields.createFields();
+        idBox= new ComboBox();
         idBox.setMinSize(400,40);
+        idBox.setEditable(true);
         grid.add(idBox,1,1);
+
+        for(int i=0; i<CreateAutofillFields.autofillArray.size()/5;i++){
+            idBox.getItems().add(CreateAutofillFields.autofillArray.get(i*5));
+        }
+
+        idBox.setOnKeyReleased( e -> {
+                    System.out.println("Key Typed");
+                    System.out.println(idBox.getValue());
+                    for(int j=0; j<CreateAutofillFields.autofillArray.size()/5;j++){
+                        if(!CreateAutofillFields.autofillArray.get(j*5).contains(idBox.getEditor().getText())){
+                            idBox.getItems().remove(CreateAutofillFields.autofillArray.get(j*5));
+                        }
+                        else if(!idBox.getItems().contains(CreateAutofillFields.autofillArray.get(j*5))  &&  CreateAutofillFields.autofillArray.get(j*5).contains( idBox.getEditor().getText())){
+                            idBox.getItems().add(CreateAutofillFields.autofillArray.get(j*5));
+
+                        }
+                        if(idBox.getItems().isEmpty()){
+                            for(int i=0; i<CreateAutofillFields.autofillArray.size()/5;i++) {
+                                idBox.getItems().add(CreateAutofillFields.autofillArray.get(i*5));
+                            }
+                            idBox.getEditor().setText("");
+                            if(isAutofill==true){
+                                nameBox.setText("");
+                                gradeBox.setText("");
+                                counsBox.setText("");
+                                isAutofill=false;
+                            }
+                        }
+                    }
+                }
+        );
+
+        idBox.setOnAction( e ->{
+            isAutofill=true;
+            nameBox.setText(CreateAutofillFields.autofillArray.get(CreateAutofillFields.autofillArray.indexOf(idBox.getEditor().getText())+1));
+            gradeBox.setText(CreateAutofillFields.autofillArray.get(CreateAutofillFields.autofillArray.indexOf(idBox.getEditor().getText())+2));
+            counsBox.setText(CreateAutofillFields.autofillArray.get(CreateAutofillFields.autofillArray.indexOf(idBox.getEditor().getText())+3));
+            System.out.println("ThisWorks");
+            int i=0;
+            int origSize = idBox.getItems().size();
+            System.out.println(idBox.getEditor().getText());
+            while(i<origSize){
+                if(!idBox.getItems().get(i).equals(idBox.getEditor().getText())){
+                    idBox.getItems().remove(i);
+                }else{
+                    System.out.println("hi");
+                    i++;
+                }
+            }
+        });
+
+
         teachBox = new ComboBox();
         teachBox.setMinSize(400,40);
         grid.add(teachBox,4,1);
@@ -96,7 +151,6 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
         for(int i=0; i<FileReaderTeacher.teacherList.size();i++) {
             teachBox.getItems().add(FileReaderTeacher.teacherList.get(i));
         }
-
        teachBox.setOnKeyReleased( e -> {
            System.out.println("Key Typed");
            System.out.println(teachBox.getValue());
@@ -117,44 +171,30 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
            }
         }
        );
-
-      
-        /*
-        boolean status = true;
-        while(teachBox.onActionProperty().toString().substring(teachBox.onActionProperty().toString().indexOf("value") + 7).equals("null")) {
-            for (int i = 0; i < teacher.length; i++) {
-                if (teacher[i].contains((String) teachBox.getValue())) {
-                    teachBox.getItems().add(teacher[i]);
-                } else {
-                    teachBox.getItems().remove(teacher[i]);
-                }
+    teachBox.setOnAction( e ->{
+        System.out.println( teachBox.getEditor().getText());
+        int h=0;
+        int origSize = teachBox.getItems().size();
+        System.out.println(h);
+        while(h<origSize){
+            if(!teachBox.getItems().get(h).equals(teachBox.getEditor().getText())){
+                teachBox.getItems().remove(h);
+            }else{
+                h++;
             }
         }
-        */
-        teachBox.setOnAction(e -> {
-        System.out.println("hi");
-        System.out.println(teachBox.onActionProperty().toString().substring(teachBox.onActionProperty().toString().indexOf("value") + 7));
     });
-        System.out.println(teachBox.getOnAction());
+
         teachBox.setEditable(true);
         nameBox= new TextField();
         grid.add(nameBox,1,4);
         nameBox.setMinSize(400,40);
 
 
-        counsBox= new ComboBox();
+        counsBox= new TextField();
         grid.add(counsBox,4,4);
         counsBox.setMinSize(400,40);
 
-        String[] counsList = {"Ms. Nelly Boishin",
-                "Mr. David Gysberts",
-                "Mrs. Barbara Martin",
-                "Mrs. Melissa Nagy",
-                "Mr. Edward Reed",
-                };
-        for(int c = 0; c<counsList.length; c++) {
-            counsBox.getItems().add(counsList[c]);
-        }
 
         gradeBox= new TextField();
         grid.add(gradeBox,1,7);
@@ -302,18 +342,18 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
         String fileName = "C:\\Users\\jacob\\Documents\\" + String.valueOf(month) + "_" + String.valueOf(year) +".csv";
         System.out.println(fileName);
         submitID.setOnAction( e -> {
-            String[] returnList= {idBox.getText(),(String) teachBox.getValue(), nameBox.getText(), (String)counsBox.getValue(),  gradeBox.getText(), reasonBox.getValue()};
+            String[] returnList= {(String)idBox.getValue(),(String) teachBox.getValue(), nameBox.getText(), counsBox.getText(),  gradeBox.getText(), reasonBox.getValue()};
             if(returnList[5].equals("Other")){
                 returnList[5] = other.getText();
             }
             //System.out.println(FileReaderTeacher.emailList.get(FileReaderTeacher.teacherList.indexOf(returnList[1])));
             CSVWriter.writeFile(fileName , returnList);  //email To could be changed to teacherList.
-            Emailer.email("infinitechSMCS2020@gmail.com","Infinity1238","jacobkiviat@gmail.com",idBox.getText() + " has just signed in", "Counseling Office Sign-In");
+            Emailer.email("infinitechSMCS2020@gmail.com","Infinity1238","jacobkiviat@gmail.com",idBox.getEditor().getText() + " has just signed in", "Counseling Office Sign-In");
             numberOfRuns++;
-            idBox.setText("");
+            idBox.getEditor().setText("");
             teachBox.getEditor().setText("");
             nameBox.setText("");
-            counsBox.setValue("");
+            counsBox.setText("");
             gradeBox.setText("");
             reasonBox.setValue("");
             other.setText("");
@@ -363,6 +403,15 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
     }
 
 
-
-
+    private void handle(Event e) {
+        int j = teachBox.getItems().size() - 1;
+        while (j >= 0) {
+            if (teachBox.getItems().get(j) != teachBox.getEditor().getText()) {
+                teachBox.getItems().remove(j);
+                System.out.println("works");
+            } else {
+                j--;
+            }
+        }
+    }
 }
