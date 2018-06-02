@@ -43,16 +43,16 @@ public class pieChartData {
             if (reasonListGUI.get(a).equals("Schedule")) {
                 schedule++;
             }
-            if (reasonListGUI.get(a).equals("Academic Planning")) {
+            else if (reasonListGUI.get(a).equals("Academic Planning")) {
                 planning++;
             }
-            if (reasonListGUI.get(a).equals("Personal/Social/Emotional")) {
+            else if (reasonListGUI.get(a).equals("Personal/Social/Emotional")) {
                 personal++;
             }
-            if (reasonListGUI.get(a).equals("College and Career Information")) {
+            else if (reasonListGUI.get(a).equals("College and Career Information")) {
                 college++;
             }
-            if (reasonListGUI.get(a).equals("Got a Pass from Counselor")) {
+            else if (reasonListGUI.get(a).equals("Got a Pass from Counselor")) {
                 pass++;
             }
             else{
@@ -88,13 +88,13 @@ public class pieChartData {
             if (gradeListGUI.get(b)== 9) {
                 nine++;
             }
-            if (gradeListGUI.get(b)== 10) {
+            else if (gradeListGUI.get(b)== 10) {
                 ten++;
             }
-            if (gradeListGUI.get(b)== 11) {
+            else if (gradeListGUI.get(b)== 11) {
                 eleven++;
             }
-            if (gradeListGUI.get(b)== 12) {
+            else if (gradeListGUI.get(b)== 12) {
                 twelve++;
             }
         }

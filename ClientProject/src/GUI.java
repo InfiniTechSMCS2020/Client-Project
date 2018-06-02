@@ -2,7 +2,7 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
+import javafx.stage.Stage;                            //NOTE FIX ERRORS ABOUT 8TH PERIOD AS WELL AS WHAT TO DO AT ANY OTHER TIME THAN THE SCHOOL DAY- POSSIBLY MAKE TIME BETWEEN CLASSES EXEMPT FROM AUTOFILL FOR TEACHERS-  FIX GUI-  FIX AUTOFILL (CLearing at the end, confirmation message, etc)
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.TextField;
 import javafx.geometry.Pos;
@@ -92,55 +92,198 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
         idBox.setMinSize(400,40);
         idBox.setEditable(true);
         grid.add(idBox,1,1);
-
-        for(int i=0; i<CreateAutofillFields.autofillArray.size()/5;i++){
-            idBox.getItems().add(CreateAutofillFields.autofillArray.get(i*5));
+        ArrayList<String> idArray = new ArrayList<String>();
+        for(int i=0; i<CreateAutofillFields.autofillArray.size();i++){
+            if(idBox.getItems().indexOf(CreateAutofillFields.autofillArray.get(i).get(0)) == -1) {
+                idBox.getItems().add(CreateAutofillFields.autofillArray.get(i).get(0));
+                idArray.add(CreateAutofillFields.autofillArray.get(i).get(0));
+            }
         }
-
+        System.out.println(idArray);
         idBox.setOnKeyReleased( e -> {
                     System.out.println("Key Typed");
                     System.out.println(idBox.getValue());
-                    for(int j=0; j<CreateAutofillFields.autofillArray.size()/5;j++){
-                        if(!CreateAutofillFields.autofillArray.get(j*5).contains(idBox.getEditor().getText())){
-                            idBox.getItems().remove(CreateAutofillFields.autofillArray.get(j*5));
+                    for(int j=0; j<idArray.size();j++){
+                        if(!idArray.get(j).contains(idBox.getEditor().getText())){
+                            idBox.getItems().remove(idArray.get(j));
                         }
-                        else if(!idBox.getItems().contains(CreateAutofillFields.autofillArray.get(j*5))  &&  CreateAutofillFields.autofillArray.get(j*5).contains( idBox.getEditor().getText())){
-                            idBox.getItems().add(CreateAutofillFields.autofillArray.get(j*5));
+                        else if(!idBox.getItems().contains(idArray.get(j))  &&  idArray.get(j).contains( idBox.getEditor().getText())){
+                            idBox.getItems().add(idArray.get(j));
 
                         }
-                        if(idBox.getItems().isEmpty()){
-                            for(int i=0; i<CreateAutofillFields.autofillArray.size()/5;i++) {
-                                idBox.getItems().add(CreateAutofillFields.autofillArray.get(i*5));
-                            }
+                        else if(idBox.getItems().isEmpty()){
                             idBox.getEditor().setText("");
-                            if(isAutofill==true){
-                                nameBox.setText("");
-                                gradeBox.setText("");
-                                counsBox.setText("");
-                                isAutofill=false;
+                            nameBox.setText("");
+                            gradeBox.setText("");
+                            counsBox.setText("");
+                            teachBox.getEditor().setText("");
+                            for(int i=0; i<idArray.size();i++) {
+                                idBox.getItems().add(idArray.get(i));
                             }
+
+
+
                         }
                     }
                 }
-        );
-
-        idBox.setOnAction( e ->{
-            isAutofill=true;
-            nameBox.setText(CreateAutofillFields.autofillArray.get(CreateAutofillFields.autofillArray.indexOf(idBox.getEditor().getText())+1));
-            gradeBox.setText(CreateAutofillFields.autofillArray.get(CreateAutofillFields.autofillArray.indexOf(idBox.getEditor().getText())+2));
-            counsBox.setText(CreateAutofillFields.autofillArray.get(CreateAutofillFields.autofillArray.indexOf(idBox.getEditor().getText())+3));
-            System.out.println("ThisWorks");
-            int i=0;
-            int origSize = idBox.getItems().size();
-            System.out.println(idBox.getEditor().getText());
-            while(i<origSize){
-                if(!idBox.getItems().get(i).equals(idBox.getEditor().getText())){
-                    idBox.getItems().remove(i);
-                }else{
-                    System.out.println("hi");
-                    i++;
+        );                                //REDO AUTOFILL FOR ID        //Handle times outside of school day and during lunch
+                                      //add else ifs to OTHER for Pie Charts
+        idBox.setOnAction( e -> {
+            nameBox.setText("");
+            gradeBox.setText("");
+            counsBox.setText("");
+            teachBox.getEditor().setText("");//FULLSCREEN      // create eliminate semester one or two method in Autofill Class
+        //Eliminate all in list that do not have chosen ID
+            ArrayList<ArrayList<String>> testList = new ArrayList<ArrayList<String>>();
+            testList = CreateAutofillFields.periodOneList();
+            System.out.println(testList);
+            int y=0;
+            while(y<testList.size()){
+                if(testList.get(y).contains(idBox.getEditor().getText())){
+                    y++;
+                }
+                else {
+                    testList.remove(y);
                 }
             }
+            System.out.println(testList);
+            boolean isSMCS= false;
+            if(testList.get(0).get(4).equals("SMC")) {
+                isSMCS = true;
+            }else{
+                isSMCS= false;
+            }
+            ArrayList<ArrayList<String>> listForAutoFill = new ArrayList<ArrayList<String>>();
+            Date d = new Date();
+            d.setHours(12);
+            d.setMinutes(0);
+            boolean isDuringDay;
+            boolean isEigthPeriod;
+            if ((d.getHours() == 7 && d.getMinutes() >= 45) || (d.getHours() == 8 && d.getMinutes() <= 31)) {
+                listForAutoFill = CreateAutofillFields.periodOneList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 8 && d.getMinutes() > 31) || (d.getHours() == 9 && d.getMinutes() <= 22)) {
+                listForAutoFill = CreateAutofillFields.periodTwoList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 9 && d.getMinutes() > 22) || (d.getHours() == 10 && d.getMinutes() <= 13)) {
+                listForAutoFill = CreateAutofillFields.periodThreeList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 10 && d.getMinutes() > 13) || (d.getHours() == 11 && d.getMinutes() <= 10)) {
+                listForAutoFill = CreateAutofillFields.periodFourList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 12 && d.getMinutes() <= 47)) {
+                listForAutoFill = CreateAutofillFields.periodFiveList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 12 && d.getMinutes() > 47) || (d.getHours() == 13 && d.getMinutes() <= 38)) {
+                listForAutoFill = CreateAutofillFields.periodSixList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 13 && d.getMinutes() > 38) || (d.getHours() == 14 && d.getMinutes() <= 30)) {
+                listForAutoFill = CreateAutofillFields.periodSevenList();
+                isDuringDay = true;
+                isEigthPeriod= false;
+            } else if ((d.getHours() == 14 && d.getMinutes() > 30) || (d.getHours() == 15 && d.getMinutes() <= 40)) {
+                if(isSMCS== true) {
+                    listForAutoFill = CreateAutofillFields.periodEightList();
+                }else{
+                    listForAutoFill = CreateAutofillFields.periodOneList();
+                }
+                isDuringDay = true;
+                isEigthPeriod= true;
+            }
+            else{
+                listForAutoFill = CreateAutofillFields.periodOneList();
+                isDuringDay = false;
+                isEigthPeriod= false;
+            }
+
+
+            int x=0;
+            while(x<listForAutoFill.size()){
+                if(listForAutoFill.get(x).contains(idBox.getEditor().getText())){
+                    x++;
+                }
+                    else {
+                    listForAutoFill.remove(x);
+                }
+            }
+            System.out.println(isSMCS);
+            System.out.println(isEigthPeriod);
+            System.out.println(isDuringDay);
+            if((d.getMonth()== 8  && d.getDay()>26) || (d.getMonth()>8) || (d.getMonth()==0 && d.getDay()<26)) {
+                if((isDuringDay == true) && (isEigthPeriod == false)) {
+                    System.out.println("THIS DID NOT WORK");
+                    nameBox.setText(listForAutoFill.get(0).get(2) + " " + listForAutoFill.get(0).get(1));
+                    gradeBox.setText(listForAutoFill.get(0).get(3));
+                    teachBox.getEditor().setText(listForAutoFill.get(0).get(9) + " " + listForAutoFill.get(0).get(10));
+                    counsBox.setText(listForAutoFill.get(0).get(11) + " " + listForAutoFill.get(0).get(12));
+                }
+                else if(isEigthPeriod == true){
+                    System.out.println("THIS DID WORK");
+                    if(isSMCS == true){
+                        nameBox.setText(listForAutoFill.get(0).get(2) + " " + listForAutoFill.get(0).get(1));
+                        gradeBox.setText(listForAutoFill.get(0).get(3));
+                        teachBox.getEditor().setText(listForAutoFill.get(0).get(9) + " " + listForAutoFill.get(0).get(10));
+                        counsBox.setText(listForAutoFill.get(0).get(11) + " " + listForAutoFill.get(0).get(12));
+                    }else if(isSMCS == false){
+                        nameBox.setText(listForAutoFill.get(0).get(2) + " " + listForAutoFill.get(0).get(1));
+                        gradeBox.setText(listForAutoFill.get(0).get(3));
+                        counsBox.setText(listForAutoFill.get(0).get(11) + " " + listForAutoFill.get(0).get(12));
+                    }
+                }
+                else{
+                    System.out.println("THIS DID WORK");
+                    nameBox.setText(listForAutoFill.get(0).get(2) + " " + listForAutoFill.get(0).get(1));
+                    gradeBox.setText(listForAutoFill.get(0).get(3));
+                    counsBox.setText(listForAutoFill.get(0).get(11) + " " + listForAutoFill.get(0).get(12));
+                }
+            }
+            System.out.println(listForAutoFill);
+            if((d.getMonth() == 0 && d.getDay()>26) || d.getMonth()>0 && d.getMonth()<6) {
+                if ((isDuringDay == true) && (isEigthPeriod == false)) {
+                    nameBox.setText(listForAutoFill.get(1).get(2) + " " + listForAutoFill.get(1).get(1));
+                    gradeBox.setText(listForAutoFill.get(1).get(3));
+                    teachBox.getEditor().setText(listForAutoFill.get(1).get(9) + " " + listForAutoFill.get(1).get(10));
+                    counsBox.setText(listForAutoFill.get(1).get(11) + " " + listForAutoFill.get(1).get(12));
+                } else if (isEigthPeriod == true) {
+                    System.out.println("THIS DID WORK");
+                    if (isSMCS == true) {
+                        nameBox.setText(listForAutoFill.get(1).get(2) + " " + listForAutoFill.get(1).get(1));
+                        gradeBox.setText(listForAutoFill.get(1).get(3));
+                        teachBox.getEditor().setText(listForAutoFill.get(1).get(9) + " " + listForAutoFill.get(0).get(10));
+                        counsBox.setText(listForAutoFill.get(1).get(11) + " " + listForAutoFill.get(1).get(12));
+                    } else if (isSMCS == false) {
+                        nameBox.setText(listForAutoFill.get(1).get(2) + " " + listForAutoFill.get(1).get(1));
+                        gradeBox.setText(listForAutoFill.get(1).get(3));
+                        counsBox.setText(listForAutoFill.get(1).get(11) + " " + listForAutoFill.get(1).get(12));
+                    }
+                } else{
+                    nameBox.setText(listForAutoFill.get(1).get(2) + " " + listForAutoFill.get(1).get(1));
+                    gradeBox.setText(listForAutoFill.get(1).get(3));
+                    counsBox.setText(listForAutoFill.get(1).get(11) + " " + listForAutoFill.get(1).get(12));
+                }
+            }
+            try {
+                System.out.println("ThisWorks");
+                int h = 0;
+                int origSize = idBox.getItems().size();
+                System.out.println(h);
+                while (h < origSize) {
+                    if (idBox.getItems().get(h).equals(idBox.getEditor().getText())) {
+                        h++;
+                    } else {
+                        idBox.getItems().remove(h);
+                    }                                             //SEE IF THIS EXCEPTION CAN BE FIXED
+                }
+            }catch(IndexOutOfBoundsException w){
+
+            }
+
         });
 
 
@@ -162,7 +305,7 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
                    teachBox.getItems().add(FileReaderTeacher.teacherList.get(j));
 
                }
-               if(teachBox.getItems().isEmpty()){
+               else if(teachBox.getItems().isEmpty()){
                    for(int i=0; i<FileReaderTeacher.teacherList.size();i++) {
                        teachBox.getItems().add(FileReaderTeacher.teacherList.get(i));
                    }
@@ -172,16 +315,20 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
         }
        );
     teachBox.setOnAction( e ->{
-        System.out.println( teachBox.getEditor().getText());
-        int h=0;
-        int origSize = teachBox.getItems().size();
-        System.out.println(h);
-        while(h<origSize){
-            if(!teachBox.getItems().get(h).equals(teachBox.getEditor().getText())){
-                teachBox.getItems().remove(h);
-            }else{
-                h++;
+        try {
+            System.out.println(teachBox.getEditor().getText());
+            int h = 0;
+            int origSize = teachBox.getItems().size();
+            System.out.println(h);
+            while (h < origSize) {
+                if (!teachBox.getItems().get(h).equals(teachBox.getEditor().getText())) {
+                    teachBox.getItems().remove(h);
+                } else {
+                    h++;
+                }
             }
+        }catch(IndexOutOfBoundsException q){
+
         }
     });
 
@@ -342,13 +489,13 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
         String fileName = "C:\\Users\\jacob\\Documents\\" + String.valueOf(month) + "_" + String.valueOf(year) +".csv";
         System.out.println(fileName);
         submitID.setOnAction( e -> {
-            String[] returnList= {(String)idBox.getValue(),(String) teachBox.getValue(), nameBox.getText(), counsBox.getText(),  gradeBox.getText(), reasonBox.getValue()};
+            String[] returnList= {idBox.getEditor().getText(), teachBox.getEditor().getText(), nameBox.getText(), counsBox.getText(),  gradeBox.getText(), reasonBox.getValue()};
             if(returnList[5].equals("Other")){
                 returnList[5] = other.getText();
             }
             //System.out.println(FileReaderTeacher.emailList.get(FileReaderTeacher.teacherList.indexOf(returnList[1])));
             CSVWriter.writeFile(fileName , returnList);  //email To could be changed to teacherList.
-            Emailer.email("infinitechSMCS2020@gmail.com","Infinity1238","jacobkiviat@gmail.com",idBox.getEditor().getText() + " has just signed in", "Counseling Office Sign-In");
+            Emailer.email("infinitechSMCS2020@gmail.com","Infinitech1238","jacobkiviat@gmail.com",idBox.getEditor().getText() + " has just signed in", "Counseling Office Sign-In");
             numberOfRuns++;
             idBox.getEditor().setText("");
             teachBox.getEditor().setText("");
