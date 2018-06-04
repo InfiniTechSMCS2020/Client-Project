@@ -51,6 +51,8 @@ public class CreateDataSet {
     public ArrayList<Integer> getGradeList(){
         return gradeList;
     }
-
+    public ArrayList<String> getCounselorList(){
+        return counselorList;
+    }
 
 }
