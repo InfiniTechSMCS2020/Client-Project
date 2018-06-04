@@ -675,7 +675,7 @@ public class GUI extends Application{       //TODO  ASK FOR CONFIRMATION BEFORE 
                 ArrayList<String> emptyList = new ArrayList<String>();
                 //System.out.println(FileReaderTeacher.emailList.get(FileReaderTeacher.teacherList.indexOf(returnList[1])));
                 CSVWriter.writeFile(fileName, returnList);  //email To could be changed to teacherList.
-                Emailer.email("infinitechSMCS2020@gmail.com", "Infinitech1238", "jacobkiviat@gmail.com", idBox.getEditor().getText() + " has just signed in", "Counseling Office Sign-In");
+                Emailer.email("infinitechSMCS2020@gmail.com", "Infinitech1238", "jacobkiviat@gmail.com", "Dear " + teachBox.getEditor().getText() + ",\n" + "     " + nameBox.getText()+ " has just signed in to the counseling office.\n\nFrom,\nThe PHS Counseling Team ", "Counseling Office Sign-In");
                 numberOfRuns++;
                 idBox.getEditor().setText("");
                 for (int i = 0; i < idArray.size(); i++) {
