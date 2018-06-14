@@ -1,0 +1,119 @@
+.root{
+-fx-background-image: url("Images/Untitled.png");
+-fx-background-size: 1920 1080;
+-fx-background-position: center center;
+} 
+.scene{
+-fx-background-image: url("Images/Untitled.png");
+-fx-background-size: 1920 1080;
+-fx-background-position: center center;
+} 
+.label{
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+}
+.label-big{
+    -fx-font-size: 28;
+
+}
+.button-submit{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("submit.png");
+    -fx-background-size: 141 53
+}
+.button-keep{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("keep.png");
+    -fx-background-size: 141 53
+}
+.button-erase{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("erase.png");
+    -fx-background-size: 141 53
+}
+.button-admin{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("admin.png");
+    -fx-background-size: 100 100;
+}
+.button-settings{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("setting.png");
+    -fx-background-size: 100 100;
+}
+.button-home{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("home.png");
+    -fx-background-size: 100 100;
+}
+.button-signIn{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("sign_in.png");
+    -fx-background-size: 141 53;
+}
+.button-changePassword{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("change_pass.png");
+    -fx-background-size: 141 53;
+}
+.button-abnormal{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("Images/abnormal.png");
+    -fx-background-size: 141 53;
+}
+.button-normal{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("normal.png");
+    -fx-background-size: 141 53;
+}
+.button-viewData{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("view_data.png");
+    -fx-background-size: 141 53;
+}
+.button-viewData2{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("view_data.png");
+    -fx-background-size: 110 36;
+}
+.button-goBack{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("go_back.png");
+    -fx-background-size: 141 53;
+}
+.button-goBack2{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("go_back.png");
+    -fx-background-size:  110 36;
+}
+.button-range{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("range.png");
+    -fx-background-size: 110 36;
+}
+.button-singleMonth{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-image: url("single_month.png");
+    -fx-background-size: 110 36;
+}
+.chart-legend{
+    -fx-background-color: #FCF69D;
+}
+
+
